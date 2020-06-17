@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "272684646296",
+    "firebase_url": "https://minicipalite-app.firebaseio.com",
+    "project_id": "minicipalite-app",
+    "storage_bucket": "minicipalite-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272684646296:android:e0e2791eceb35251d3f5ed",
+        "android_client_info": {
+          "package_name": "com.example.minicipalite_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272684646296-835sfqoef4s7jhqh9b3jkd7q88e9gs06.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZDGGXnoRzKtWeNN1tKfN0ZOGlAKHQCOw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272684646296-835sfqoef4s7jhqh9b3jkd7q88e9gs06.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
