@@ -6,6 +6,7 @@ import 'package:minicipalite_app/routes/router.gr.dart';
 import 'package:minicipalite_app/services/auth.dart';
 import 'package:minicipalite_app/services/services.dart';
 import 'package:minicipalite_app/ui/widgets/post_card.dart';
+import 'package:minicipalite_app/ui/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -17,7 +18,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   List<Post> posts;
-
+  Icon cusIcon = Icon(
+    Icons.search,
+    color: Colors.white,
+  );
+  Widget cusSearchBar = Text('Home');
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<PostRepository>(context);
@@ -30,16 +35,35 @@ class _HomeState extends State<Home> {
       ),
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.black12,
-        elevation: 0.0,
-        title: Text("Minicipalite"),
+        backgroundColor: Colors.blue,
+        elevation: 2.0,
+        title: cusSearchBar,
         actions: <Widget>[
-          FlatButton.icon(
-              onPressed: () async {
-                await _auth.signOut();
-              },
-              icon: Icon(Icons.person),
-              label: Text("Log out"))
+          IconButton(
+            icon: cusIcon,
+            onPressed: () {
+              setState(() {
+                if (this.cusIcon.icon == Icons.search) {
+                  this.cusIcon = Icon(
+                    Icons.close,
+                    color: Colors.white,
+                  );
+                  this.cusSearchBar = TextField(
+                    textInputAction: TextInputAction.go,
+                    decoration: InputDecoration(
+                        border: InputBorder.none, hintText: 'Search Posts'),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  );
+                } else {
+                  this.cusIcon = Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  );
+                  this.cusSearchBar = Text('Home');
+                }
+              });
+            },
+          ),
         ],
       ),
       body: Container(
@@ -64,6 +88,7 @@ class _HomeState extends State<Home> {
               }
             }),
       ),
+      drawer: MyAppDrawer(),
     );
   }
 }

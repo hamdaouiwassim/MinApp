@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:minicipalite_app/models/post.dart';
 import 'package:minicipalite_app/models/user.dart';
 import 'package:minicipalite_app/repositories/post_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:minicipalite_app/services/auth.dart';
+import 'package:minicipalite_app/ui/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart';
 
@@ -17,7 +20,7 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   final _formKey = GlobalKey<FormState>();
-  String productType = "Sélectionnez un titre";
+  String productType = '';
   String title;
   String price;
   File _image;
@@ -44,14 +47,15 @@ class _AddPostState extends State<AddPost> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Add Product'),
+          child: Text('Add Post'),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.all(10),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: new Wrap(
+            direction: Axis.vertical,
             children: <Widget>[
               /*  TextFormField(
                   decoration: InputDecoration(
@@ -70,7 +74,8 @@ class _AddPostState extends State<AddPost> {
                 height: 16,
               ),
               DropdownButton<String>(
-                value: productType,
+                hint: Text('Sélectionnez un titre'),
+                //   value: productType,
                 onChanged: (String newValue) {
                   setState(() {
                     productType = newValue;
@@ -83,60 +88,63 @@ class _AddPostState extends State<AddPost> {
                   'le bruit',
                   'Empilage de la saleté et des déchets de construction',
                   'Construire sans licence',
-                  'Sélectionnez un titre'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
-                      textWidthBasis: TextWidthBasis.parent,
                     ),
                   );
                 }).toList(),
               ),
-              new SizedBox(
-                width: 180.0,
-                height: 180.0,
-                child: (_image != null)
-                    ? Image.file(
-                        _image,
-                        fit: BoxFit.fill,
-                      )
-                    : Image.network(
-                        "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-                        fit: BoxFit.fill,
-                      ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: new SizedBox(
+                  width: 180.0,
+                  height: 180.0,
+                  child: (_image != null)
+                      ? Image.file(
+                          _image,
+                          fit: BoxFit.fill,
+                        )
+                      : Image.network(
+                          "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+                          fit: BoxFit.fill,
+                        ),
+                ),
               ),
               Padding(
-                padding: EdgeInsets.only(),
+                padding: EdgeInsets.symmetric(horizontal: 40),
                 child: IconButton(
                   icon: Icon(
                     Icons.add_a_photo,
-                    size: 30.0,
                   ),
                   onPressed: () {
                     _showChoiceDialog(context);
                   },
                 ),
               ),
-              RaisedButton(
-                splashColor: Colors.red,
-                onPressed: () async {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    uploadPicture(context).whenComplete(() {
-                      Navigator.pop(context);
-                      addPostToFirebase(context);
-                    });
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: RaisedButton(
+                  // splashColor: Colors.red,
+                  onPressed: () async {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      uploadPicture(context).whenComplete(() {
+                        Navigator.pop(context);
+                        addPostToFirebase(context);
+                      });
 
-                    //  Scaffold.of(context).showSnackBar(
-                    //            SnackBar(content: Text('  Uploaded Failed')));
+                      //  Scaffold.of(context).showSnackBar(
+                      //            SnackBar(content: Text('  Uploaded Failed')));
 
-                  }
-                },
-                child:
-                    Text('add Product', style: TextStyle(color: Colors.white)),
-                color: Colors.blue,
+                    }
+                  },
+                  child: Text('add Product',
+                      style: TextStyle(color: Colors.white)),
+                  color: Colors.blue,
+                ),
               ),
               new Align(
                 child: loadingIndicator,
@@ -146,6 +154,7 @@ class _AddPostState extends State<AddPost> {
           ),
         ),
       ),
+      drawer: MyAppDrawer(),
     );
   }
 

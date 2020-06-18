@@ -8,3 +8,6 @@ export 'logo_graphic_header.dart';
 export 'dropdown_picker.dart';
 export 'dropdown_picker_with_icon.dart';
 export 'avatar.dart';
+export 'app_drawer.dart';
+export 'drawer_header.dart';
+export 'drawer_item.dart';

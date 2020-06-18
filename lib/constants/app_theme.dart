@@ -10,6 +10,7 @@ class AppThemes {
   static const Color juneBud = Color.fromRGBO(186, 215, 97, 1);
   static const Color white = Color.fromRGBO(255, 255, 255, 1);
   static const Color nevada = Color.fromRGBO(105, 109, 119, 1);
+  // static const Color nevada = Color.fromRGBO(255, 255, 255, 1);
   static const Color ebonyClay = Color.fromRGBO(40, 42, 58, 1);
 
   static String font1 = "ProductSans";
@@ -93,7 +94,7 @@ class AppThemes {
     ),
     appBarTheme: AppBarTheme(
       color: _lightBackgroundAppBarColor,
-      iconTheme: IconThemeData(color: _lightTextColor),
+      iconTheme: IconThemeData(color: white),
       textTheme: _lightTextTheme,
     ),
     colorScheme: ColorScheme.light(

@@ -32,13 +32,15 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
   Widget build(BuildContext context) {
     final labels = AppLocalizations.of(context);
     return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(title: Text(labels.auth.updateProfileTitle)),
-        body: LoadingScreen(
-          child: updateProfileForm(context),
-          inAsyncCall: _loading,
-          color: Theme.of(context).scaffoldBackgroundColor,
-        ));
+      key: _scaffoldKey,
+      appBar: AppBar(title: Text(labels.auth.updateProfileTitle)),
+      body: LoadingScreen(
+        child: updateProfileForm(context),
+        inAsyncCall: _loading,
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      drawer: MyAppDrawer(),
+    );
   }
 
   updateProfileForm(BuildContext context) {
