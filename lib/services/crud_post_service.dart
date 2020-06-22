@@ -14,8 +14,15 @@ class CrudPostService {
     return ref.getDocuments();
   }
 
-  Stream<QuerySnapshot> streamDataCollection() {
-    return ref.snapshots();
+  Stream<QuerySnapshot> streamDataCollection(String ui) {
+    return ref
+        .where('idUser', isGreaterThan: ui)
+        //     .where('idUser', isLessThan: ui)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamMyDataCollection(String ui) {
+    return ref.where('idUser', isEqualTo: ui).snapshots();
   }
 
   Future<DocumentSnapshot> getPostById(String id) {

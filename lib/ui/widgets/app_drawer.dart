@@ -16,6 +16,10 @@ class MyAppDrawer extends StatelessWidget {
               icon: Icons.person_outline,
               text: 'Profile',
               routeName: Routes.updateProfileUI),
+          DrawerItem(
+              icon: Icons.border_color,
+              text: 'My posts',
+              routeName: Routes.myPosts),
           Divider(
             color: Colors.grey,
           ),

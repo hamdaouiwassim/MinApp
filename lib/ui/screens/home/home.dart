@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:minicipalite_app/models/models.dart';
 import 'package:minicipalite_app/models/post.dart';
 import 'package:minicipalite_app/repositories/post_repository.dart';
 import 'package:minicipalite_app/routes/router.gr.dart';
@@ -11,12 +12,14 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
+  const Home({Key key}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final AuthService _auth = AuthService();
+  //final AuthService _auth = AuthService();
+
   List<Post> posts;
   Icon cusIcon = Icon(
     Icons.search,
@@ -26,6 +29,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<PostRepository>(context);
+    final user = Provider.of<User>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -68,7 +72,7 @@ class _HomeState extends State<Home> {
       ),
       body: Container(
         child: StreamBuilder(
-            stream: productProvider.getAllPostsAsStream(),
+            stream: productProvider.getAllPostsAsStream(user.uid),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 posts = snapshot.data.documents
@@ -76,8 +80,10 @@ class _HomeState extends State<Home> {
                     .toList();
                 return ListView.builder(
                   itemCount: posts.length,
-                  itemBuilder: (buildContext, index) =>
-                      PostCard(post: posts[index]),
+                  itemBuilder: (buildContext, index) => PostCard(
+                    post: posts[index],
+                    postowner: false,
+                  ),
                 );
               } else {
                 return Container(

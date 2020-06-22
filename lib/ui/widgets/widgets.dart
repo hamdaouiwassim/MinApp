@@ -11,3 +11,4 @@ export 'avatar.dart';
 export 'app_drawer.dart';
 export 'drawer_header.dart';
 export 'drawer_item.dart';
+export 'post_card.dart';

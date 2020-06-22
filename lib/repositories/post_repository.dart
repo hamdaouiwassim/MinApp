@@ -20,8 +20,12 @@ class PostRepository extends ChangeNotifier {
     return posts;
   }
 
-  Stream<QuerySnapshot> getAllPostsAsStream() {
-    return _api.streamDataCollection();
+  Stream<QuerySnapshot> getAllPostsAsStream(String uid) {
+    return _api.streamDataCollection(uid);
+  }
+
+  Stream<QuerySnapshot> getMyPostsAsStream(String uid) {
+    return _api.streamMyDataCollection(uid);
   }
 
   Future<Post> getPostById(String id) async {

@@ -12,17 +12,7 @@ class AuthService extends ChangeNotifier {
   Future<FirebaseUser> get getUser => _auth.currentUser();
 
   // Firebase user a realtime stream
- // Stream<FirebaseUser> get user => _auth.onAuthStateChanged;
-  User _userfromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
-  }
-
-  // auth change user stream
-  Stream<User> get user {
-    return _auth.onAuthStateChanged
-    //.map((FirebaseUser user) => _userfromFirebaseUser(user));
-        .map(_userfromFirebaseUser);
-  }
+  Stream<FirebaseUser> get user => _auth.onAuthStateChanged;
 
   //Streams the firestore user from the firestore collection
   Stream<User> streamFirestoreUser(FirebaseUser firebaseUser) {
@@ -47,7 +37,7 @@ class AuthService extends ChangeNotifier {
 
   // User registration using email and password
   Future<bool> registerWithEmailAndPassword(
-      String name, String email, String password , String photoUrl) async {
+      String name, String email, String password, String photoUrl) async {
     try {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
@@ -72,8 +62,7 @@ class AuthService extends ChangeNotifier {
   }
 
   //handles updating the user when updating profile
-  Future<bool> updateUser(
-      User user, String oldEmail, String password) async {
+  Future<bool> updateUser(User user, String oldEmail, String password) async {
     bool _result = false;
     await _auth
         .signInWithEmailAndPassword(email: oldEmail, password: password)

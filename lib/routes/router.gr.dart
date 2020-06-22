@@ -9,12 +9,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:minicipalite_app/ui/screens/wrapper.dart';
 import 'package:minicipalite_app/ui/screens/post/add_post.dart';
-import 'package:minicipalite_app/ui/screens/post/details_post.dart';
 import 'package:minicipalite_app/models/post.dart';
+import 'package:minicipalite_app/ui/screens/post/details_post.dart';
 import 'package:minicipalite_app/ui/screens/auth/sign_in_ui.dart';
 import 'package:minicipalite_app/ui/screens/auth/sign_up_ui.dart';
 import 'package:minicipalite_app/ui/screens/auth/update_profile_ui.dart';
 import 'package:minicipalite_app/ui/screens/auth/reset_password_ui.dart';
+import 'package:minicipalite_app/ui/screens/post/my_posts.dart';
 
 abstract class Routes {
   static const wrapper = '/';
@@ -24,6 +25,7 @@ abstract class Routes {
   static const signUpUI = '/sign-up-uI';
   static const updateProfileUI = '/update-profile-uI';
   static const resetPasswordUI = '/reset-password-uI';
+  static const myPosts = '/my-posts';
   static const all = {
     wrapper,
     addPost,
@@ -32,6 +34,7 @@ abstract class Routes {
     signUpUI,
     updateProfileUI,
     resetPasswordUI,
+    myPosts,
   };
 }
 
@@ -53,8 +56,13 @@ class Router extends RouterBase {
           settings: settings,
         );
       case Routes.addPost:
+        if (hasInvalidArgs<AddPostArguments>(args)) {
+          return misTypedArgsRoute<AddPostArguments>(args);
+        }
+        final typedArgs = args as AddPostArguments ?? AddPostArguments();
         return MaterialPageRoute<dynamic>(
-          builder: (context) => AddPost(),
+          builder: (context) =>
+              AddPost(key: typedArgs.key, post: typedArgs.post),
           settings: settings,
         );
       case Routes.postDetails:
@@ -86,6 +94,11 @@ class Router extends RouterBase {
           builder: (context) => ResetPasswordUI(),
           settings: settings,
         );
+      case Routes.myPosts:
+        return MaterialPageRoute<dynamic>(
+          builder: (context) => MyPosts(),
+          settings: settings,
+        );
       default:
         return unknownRoutePage(settings.name);
     }
@@ -95,6 +108,13 @@ class Router extends RouterBase {
 // *************************************************************************
 // Arguments holder classes
 // **************************************************************************
+
+//AddPost arguments holder class
+class AddPostArguments {
+  final Key key;
+  final Post post;
+  AddPostArguments({this.key, this.post});
+}
 
 //PostDetails arguments holder class
 class PostDetailsArguments {

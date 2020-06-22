@@ -1,11 +1,20 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minicipalite_app/repositories/post_repository.dart';
+import 'package:minicipalite_app/ui/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 import 'package:minicipalite_app/models/models.dart';
 import 'package:minicipalite_app/localizations.dart';
 import 'package:minicipalite_app/services/services.dart';
 import 'package:minicipalite_app/ui/widgets/widgets.dart';
 import 'package:minicipalite_app/utils/utils.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 class UpdateProfileUI extends StatefulWidget {
   _UpdateProfileUIState createState() => _UpdateProfileUIState();
@@ -17,6 +26,10 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
   final TextEditingController _email = new TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loading = false;
+  File _image;
+  String _uploadedFileURL;
+  bool _photoChanged;
+  List<Post> posts;
   @override
   void initState() {
     super.initState();
@@ -33,7 +46,7 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
     final labels = AppLocalizations.of(context);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(title: Text(labels.auth.updateProfileTitle)),
+      appBar: AppBar(title: Text("Profile")),
       body: LoadingScreen(
         child: updateProfileForm(context),
         inAsyncCall: _loading,
@@ -45,8 +58,10 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
 
   updateProfileForm(BuildContext context) {
     final User user = Provider.of<User>(context);
+    final productProvider = Provider.of<PostRepository>(context);
     _name.text = user?.name;
     _email.text = user?.email;
+    _uploadedFileURL = user?.photoUrl;
     final labels = AppLocalizations.of(context);
     return Form(
       key: _formKey,
@@ -58,7 +73,25 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                LogoGraphicHeader(),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  children: <Widget>[
+                    LogoGraphicHeader(
+                      imageUrl: _uploadedFileURL,
+                      file: _image,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.camera_alt,
+                        size: 30.0,
+                      ),
+                      onPressed: () {
+                        _showChoiceDialog(context);
+                      },
+                    ),
+                  ],
+                ),
                 SizedBox(height: 48.0),
                 FormInputFieldWithIcon(
                   controller: _name,
@@ -84,26 +117,86 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         SystemChannels.textInput.invokeMethod('TextInput.hide');
+                        _formKey.currentState.save();
                         User _updatedUser = User(
                             uid: user?.uid,
                             name: _name.text,
                             email: _email.text,
-                            photoUrl: user?.photoUrl);
-                        _updateUserConfirm(context, _updatedUser, user?.email);
+                            photoUrl: _uploadedFileURL);
+                        if (_photoChanged)
+                          uploadPicture(context).whenComplete(() {
+                            _updatedUser.photoUrl = _uploadedFileURL;
+                            //   Navigator.pop(context);
+                            _updateUserConfirm(
+                                context, _updatedUser, user?.email);
+                          });
+                        else {
+                          _updateUserConfirm(
+                              context, _updatedUser, user?.email);
+                        }
                       }
                     }),
                 FormVerticalSpace(),
-                LabelButton(
+
+                /*      LabelButton(
                     labelText: labels.auth.changePasswordLabelButton,
                     onPressed: () => Navigator.pushNamed(
                         context, '/reset-password',
-                        arguments: user.email)),
+                        arguments: user.email)),*/
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _showChoiceDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  GestureDetector(
+                    child: Text('Choose photo from Gallery'),
+                    onTap: () {
+                      _openGallery(context);
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  GestureDetector(
+                    child: Text('Take a Photo'),
+                    onTap: () {
+                      _openCamera(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  _openGallery(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    this.setState(() {
+      _image = picture;
+      _photoChanged = true;
+    });
+    Navigator.of(context).pop();
+  }
+
+  _openCamera(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    this.setState(() {
+      _image = picture;
+      _photoChanged = true;
+    });
+    Navigator.of(context).pop();
   }
 
   Future<bool> _updateUserConfirm(
@@ -188,5 +281,28 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
             ],
           );
         });
+  }
+
+  Future uploadPicture(BuildContext context) async {
+    /* setState(() {
+      isLoading = true;
+    });*/
+    if (_formKey.currentState.validate()) {
+      StorageReference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child("User Pictures");
+      var timeKey = new DateTime.now();
+      String fileName = basename(_image.path);
+      final StorageUploadTask uploadTask =
+          firebaseStorageRef.child(fileName).putFile(_image);
+      var imgURL = await (await uploadTask.onComplete).ref.getDownloadURL();
+      _uploadedFileURL = imgURL.toString();
+    }
+
+    setState(() {
+      print("Profile Picture uploaded");
+      //  isLoading = false;
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(' Photo Uploaded')));
+    });
   }
 }

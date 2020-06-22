@@ -4,6 +4,7 @@ import 'package:minicipalite_app/ui/screens/auth/auth.dart';
 import 'package:minicipalite_app/ui/screens/home/home.dart';
 import 'package:minicipalite_app/ui/screens/post/add_post.dart';
 import 'package:minicipalite_app/ui/screens/post/details_post.dart';
+import 'package:minicipalite_app/ui/screens/post/my_posts.dart';
 import 'package:minicipalite_app/ui/screens/wrapper.dart';
 import 'package:auto_route/auto_route_annotations.dart';
 
@@ -17,6 +18,7 @@ class $Router {
   SignUpUI signUpUI;
   UpdateProfileUI updateProfileUI;
   ResetPasswordUI resetPasswordUI;
+  MyPosts myPosts;
 }
 /*
  static Route<dynamic> generateRoute(RouteSettings settings) {

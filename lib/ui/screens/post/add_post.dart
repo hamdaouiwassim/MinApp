@@ -10,25 +10,46 @@ import 'package:minicipalite_app/repositories/post_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:minicipalite_app/services/auth.dart';
 import 'package:minicipalite_app/ui/widgets/widgets.dart';
+import 'package:minicipalite_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart';
 
 class AddPost extends StatefulWidget {
+  final Post post;
+
+  const AddPost({Key key, this.post}) : super(key: key);
+
   @override
   _AddPostState createState() => _AddPostState();
 }
 
 class _AddPostState extends State<AddPost> {
   final _formKey = GlobalKey<FormState>();
-  String productType = '';
+  String productType;
   String title;
-  String price;
+  String description;
   File _image;
-  String _uploadedFileURL;
+  bool updating = false;
+  String _uploadedFileURL =
+      "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60";
   bool isLoading = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var postProvider = Provider.of<PostRepository>(context);
+    final user = Provider.of<User>(context);
+    if (widget.post != null) {
+      updating = true;
+      if (listofTitles.contains(widget.post.title)) title = widget.post.title;
+      description = widget.post.description;
+      _uploadedFileURL = widget.post.photo;
+    }
+
     Widget loadingIndicator = isLoading
         ? new AlertDialog(
             content: Row(
@@ -47,15 +68,15 @@ class _AddPostState extends State<AddPost> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Add Post'),
+          child: Text(widget.post == null ? 'Add Post' : "Update Post"),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8.0),
         child: Form(
           key: _formKey,
-          child: new Wrap(
-            direction: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               /*  TextFormField(
                   decoration: InputDecoration(
@@ -74,21 +95,16 @@ class _AddPostState extends State<AddPost> {
                 height: 16,
               ),
               DropdownButton<String>(
+                isExpanded: true,
                 hint: Text('Sélectionnez un titre'),
-                //   value: productType,
+                value: title,
                 onChanged: (String newValue) {
                   setState(() {
-                    productType = newValue;
+                    title = newValue;
                   });
                 },
-                items: <String>[
-                  'Eclairage',
-                  'Routes et trottoirs',
-                  'chiens lâches',
-                  'le bruit',
-                  'Empilage de la saleté et des déchets de construction',
-                  'Construire sans licence',
-                ].map<DropdownMenuItem<String>>((String value) {
+                items:
+                    listofTitles.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
@@ -97,55 +113,92 @@ class _AddPostState extends State<AddPost> {
                   );
                 }).toList(),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                child: new SizedBox(
-                  width: 180.0,
-                  height: 180.0,
-                  child: (_image != null)
-                      ? Image.file(
-                          _image,
-                          fit: BoxFit.fill,
-                        )
-                      : Image.network(
-                          "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-                          fit: BoxFit.fill,
-                        ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.add_a_photo,
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.end,
+                children: <Widget>[
+                  new SizedBox(
+                    width: 120.0,
+                    height: 120.0,
+                    child: (_image != null)
+                        ? Image.file(
+                            _image,
+                            fit: BoxFit.fill,
+                          )
+                        : Image.network(
+                            _uploadedFileURL,
+                            fit: BoxFit.fill,
+                          ),
                   ),
-                  onPressed: () {
-                    _showChoiceDialog(context);
-                  },
+                  IconButton(
+                    icon: Icon(
+                      Icons.add_a_photo,
+                    ),
+                    onPressed: () {
+                      _showChoiceDialog(context);
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              TextFormField(
+                maxLines: 3,
+                initialValue: description,
+                onChanged: (String newValue) {
+                  setState(() {
+                    description = newValue;
+                  });
+                },
+                decoration: new InputDecoration(
+                  labelText: " Description",
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: RaisedButton(
+              FormVerticalSpace(),
+              PrimaryButton(
                   // splashColor: Colors.red,
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      uploadPicture(context).whenComplete(() {
+                      var timeKey = DateTime.now();
+                      var formatDate = new DateFormat('MMM d, yyyy');
+                      if (_uploadedFileURL != widget.post.photo)
+                        uploadPicture(context).whenComplete(() {
+                          Post post = Post(
+                            idUser: user.uid,
+                            title: title.toLowerCase(),
+                            photo: _uploadedFileURL,
+                            date: formatDate.format(timeKey),
+                            description: description,
+                            longitude: 0,
+                            latitude: 0,
+                          );
+
+                          updating
+                              ? postProvider.updatePost(post, widget.post.id)
+                              : addPostToFirebase(context, post);
+                          Navigator.pop(context);
+                        });
+                      else {
+                        Post post = Post(
+                          idUser: user.uid,
+                          title: title.toLowerCase(),
+                          photo: _uploadedFileURL,
+                          date: formatDate.format(timeKey),
+                          description: description,
+                          longitude: 0,
+                          latitude: 0,
+                        );
+                        await postProvider.updatePost(post, widget.post.id);
                         Navigator.pop(context);
-                        addPostToFirebase(context);
-                      });
+                      }
 
                       //  Scaffold.of(context).showSnackBar(
                       //            SnackBar(content: Text('  Uploaded Failed')));
 
                     }
                   },
-                  child: Text('add Product',
-                      style: TextStyle(color: Colors.white)),
-                  color: Colors.blue,
-                ),
-              ),
+                  labelText: widget.post == null ? 'Add Post' : "Update Post"),
               new Align(
                 child: loadingIndicator,
                 alignment: FractionalOffset.center,
@@ -213,19 +266,9 @@ class _AddPostState extends State<AddPost> {
       return false;
   }
 
-  void addPostToFirebase(BuildContext context) {
+  void addPostToFirebase(BuildContext context, Post post) {
     var postProvider = Provider.of<PostRepository>(context);
-    final user = Provider.of<User>(context);
-    var timeKey = DateTime.now();
-    var formatDate = new DateFormat('MMM d, yyyy');
-    postProvider.addPost(Post(
-      idUser: user.uid,
-      title: productType.toLowerCase(),
-      photo: _uploadedFileURL,
-      date: formatDate.format(timeKey),
-      longitude: 0,
-      latitude: 0,
-    ));
+    postProvider.addPost(post);
   }
 
   Future uploadPicture(BuildContext context) async {
