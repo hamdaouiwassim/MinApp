@@ -15,29 +15,7 @@ class PostDetails extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product Details'),
-        actions: <Widget>[
-          IconButton(
-            iconSize: 35,
-            icon: Icon(Icons.delete_forever),
-            onPressed: () async {
-              await postProvider.removePost(post.id);
-              Navigator.pop(context);
-            },
-          ),
-          IconButton(
-            iconSize: 35,
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => UpdatePost(
-                            post: post,
-                          )));
-            },
-          )
-        ],
+        title: Text('Post Details'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -60,6 +38,15 @@ class PostDetails extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 fontSize: 22,
                 fontStyle: FontStyle.italic),
+          ),
+          Text(
+            post.description,
+            style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+          ),
+          Text(
+            post.date,
+            textAlign: TextAlign.end,
+            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
           ),
         ],
       ),
