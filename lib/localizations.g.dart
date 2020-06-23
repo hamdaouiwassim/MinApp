@@ -99,7 +99,7 @@ class AppLocalizations {
         unknownError: "Erreur inconnue",
       ),
       settings: AppLocalizations_Labels_Settings(
-        title: "Réglages",
+        title: "Paramètres",
         language: "Langue",
         theme: "Thème",
         signOut: "Déconnexion",

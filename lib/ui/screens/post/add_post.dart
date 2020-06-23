@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +25,7 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   final _formKey = GlobalKey<FormState>();
   String productType;
-  String title;
+  String _title;
   String description;
   File _image;
   bool updating = false;
@@ -45,7 +44,7 @@ class _AddPostState extends State<AddPost> {
     final user = Provider.of<User>(context);
     if (widget.post != null) {
       updating = true;
-      if (listofTitles.contains(widget.post.title)) title = widget.post.title;
+      if (listofTitles.contains(widget.post.title)) _title = widget.post.title;
       description = widget.post.description;
       _uploadedFileURL = widget.post.photo;
     }
@@ -97,10 +96,10 @@ class _AddPostState extends State<AddPost> {
               DropdownButton<String>(
                 isExpanded: true,
                 hint: Text('Sélectionnez un titre'),
-                value: title,
-                onChanged: (String newValue) {
-                  setState(() {
-                    title = newValue;
+                value: _title,
+                onChanged: (String txt) {
+                  this.setState(() {
+                    _title = txt;
                   });
                 },
                 items:
@@ -146,7 +145,7 @@ class _AddPostState extends State<AddPost> {
                 maxLines: 3,
                 initialValue: description,
                 onChanged: (String newValue) {
-                  setState(() {
+                  this.setState(() {
                     description = newValue;
                   });
                 },
@@ -162,17 +161,16 @@ class _AddPostState extends State<AddPost> {
                       _formKey.currentState.save();
                       var timeKey = DateTime.now();
                       var formatDate = new DateFormat('MMM d, yyyy');
-                      if (_uploadedFileURL != widget.post.photo)
+
+                      if (_uploadedFileURL != widget.post?.photo)
                         uploadPicture(context).whenComplete(() {
                           Post post = Post(
-                            idUser: user.uid,
-                            title: title.toLowerCase(),
-                            photo: _uploadedFileURL,
-                            date: formatDate.format(timeKey),
-                            description: description,
-                            longitude: 0,
-                            latitude: 0,
-                          );
+                              idUser: user.uid,
+                              title: _title.toLowerCase(),
+                              photo: _uploadedFileURL,
+                              date: formatDate.format(timeKey),
+                              description: description,
+                              status: "En cours");
 
                           updating
                               ? postProvider.updatePost(post, widget.post.id)
@@ -181,13 +179,12 @@ class _AddPostState extends State<AddPost> {
                         });
                       else {
                         Post post = Post(
+                          id: widget.post.id,
                           idUser: user.uid,
-                          title: title.toLowerCase(),
+                          title: _title.toLowerCase(),
                           photo: _uploadedFileURL,
                           date: formatDate.format(timeKey),
                           description: description,
-                          longitude: 0,
-                          latitude: 0,
                         );
                         await postProvider.updatePost(post, widget.post.id);
                         Navigator.pop(context);
@@ -279,7 +276,7 @@ class _AddPostState extends State<AddPost> {
       StorageReference firebaseStorageRef =
           FirebaseStorage.instance.ref().child("Post Images");
       var timeKey = new DateTime.now();
-      String fileName = basename(_image.path);
+      String fileName = basename(_image?.path);
       final StorageUploadTask uploadTask =
           firebaseStorageRef.child(fileName).putFile(_image);
       var imgURL = await (await uploadTask.onComplete).ref.getDownloadURL();

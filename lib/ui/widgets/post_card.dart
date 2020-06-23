@@ -65,6 +65,7 @@ class PostCard extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.45,
             width: MediaQuery.of(context).size.width * 0.9,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Hero(
                   tag: post.id,
@@ -74,7 +75,7 @@ class PostCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.only(left: 10.0, top: 5.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -85,13 +86,16 @@ class PostCard extends StatelessWidget {
                             fontSize: 22,
                             fontStyle: FontStyle.italic),
                       ),
-                      Text(
-                        post.date,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 14,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black38),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Text(
+                          post.status,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                              fontStyle: FontStyle.normal,
+                              color: Colors.indigoAccent),
+                        ),
                       ),
                       if (postowner)
                         IconButton(
@@ -99,6 +103,22 @@ class PostCard extends StatelessWidget {
                             onPressed: _showPopupMenu)
                     ],
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0, bottom: 5.0),
+                      child: Text(
+                        post.date,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black38),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),

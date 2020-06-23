@@ -28,7 +28,7 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
   bool _loading = false;
   File _image;
   String _uploadedFileURL;
-  bool _photoChanged;
+  bool _photoChanged = false;
   List<Post> posts;
   @override
   void initState() {
@@ -123,14 +123,14 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
                             name: _name.text,
                             email: _email.text,
                             photoUrl: _uploadedFileURL);
-                        if (_photoChanged)
+                        if (_photoChanged) {
                           uploadPicture(context).whenComplete(() {
                             _updatedUser.photoUrl = _uploadedFileURL;
                             //   Navigator.pop(context);
                             _updateUserConfirm(
                                 context, _updatedUser, user?.email);
                           });
-                        else {
+                        } else {
                           _updateUserConfirm(
                               context, _updatedUser, user?.email);
                         }

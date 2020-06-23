@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:minicipalite_app/models/models.dart';
 import 'package:minicipalite_app/models/post.dart';
@@ -29,7 +30,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<PostRepository>(context);
-    final user = Provider.of<User>(context);
+    final user = Provider.of<FirebaseUser>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {

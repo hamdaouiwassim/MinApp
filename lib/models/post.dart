@@ -5,9 +5,7 @@ class Post {
   String photo;
   String date;
   String description;
-
-  double longitude;
-  double latitude;
+  String status;
 
   Post(
       {this.id,
@@ -16,8 +14,7 @@ class Post {
       this.photo,
       this.date,
       this.description,
-      this.longitude,
-      this.latitude});
+      this.status});
 
   Post.fromMap(Map map, String id)
       : id = id ?? '',
@@ -26,8 +23,7 @@ class Post {
         photo = map['photo'] ?? '',
         date = map["date"] ?? '',
         description = map["description"] ?? '',
-        longitude = map['longitude'] ?? 0.0,
-        latitude = map['latitude'] ?? 0.0;
+        status = map['status'] ?? '';
 
   toJson() {
     return {
@@ -36,8 +32,7 @@ class Post {
       "photo": photo,
       "date": date,
       "description": description,
-      "longitude": longitude,
-      "latitude": latitude
+      "status": status,
     };
   }
 }

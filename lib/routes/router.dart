@@ -10,7 +10,7 @@ import 'package:auto_route/auto_route_annotations.dart';
 
 @MaterialAutoRouter(routesClassName: 'Routes')
 class $Router {
-  @initial
+  @MaterialRoute(initial: true)
   Wrapper wrapper;
   AddPost addPost;
   PostDetails postDetails;

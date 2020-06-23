@@ -20,7 +20,7 @@ class LogoGraphicHeader extends StatelessWidget {
           backgroundColor: Colors.transparent,
           radius: 50.0,
           child: ClipOval(
-            child: (imageUrl.isEmpty && file == null)
+            child: (imageUrl == null && file == null)
                 ? Image.asset(
                     _imageLogo,
                     fit: BoxFit.cover,
