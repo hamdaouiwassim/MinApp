@@ -19,14 +19,31 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  _HomeState() {
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          _searchText = "";
+          filteredPosts = posts;
+        });
+      } else {
+        setState(() {
+          _searchText = _filter.text;
+        });
+      }
+    });
+  }
   //final AuthService _auth = AuthService();
-
+  // controls the text label we use as a search bar
+  final TextEditingController _filter = new TextEditingController();
+  String _searchText = "";
+  List<Post> filteredPosts;
   List<Post> posts;
-  Icon cusIcon = Icon(
+  Icon _searchIcon = Icon(
     Icons.search,
     color: Colors.white,
   );
-  Widget cusSearchBar = Text('Home');
+  Widget _appBarTitle = Text('Home');
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<PostRepository>(context);
@@ -42,32 +59,11 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         elevation: 2.0,
-        title: cusSearchBar,
+        title: _appBarTitle,
         actions: <Widget>[
           IconButton(
-            icon: cusIcon,
-            onPressed: () {
-              setState(() {
-                if (this.cusIcon.icon == Icons.search) {
-                  this.cusIcon = Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  );
-                  this.cusSearchBar = TextField(
-                    textInputAction: TextInputAction.go,
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: 'Search Posts'),
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
-                  );
-                } else {
-                  this.cusIcon = Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  );
-                  this.cusSearchBar = Text('Home');
-                }
-              });
-            },
+            icon: _searchIcon,
+            onPressed: _searchPressed,
           ),
         ],
       ),
@@ -76,16 +72,14 @@ class _HomeState extends State<Home> {
             stream: productProvider.getAllPostsAsStream(user.uid),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
-                posts = snapshot.data.documents
+                List tempList = new List();
+                tempList = snapshot.data.documents
                     .map((doc) => Post.fromMap(doc.data, doc.documentID))
                     .toList();
-                return ListView.builder(
-                  itemCount: posts.length,
-                  itemBuilder: (buildContext, index) => PostCard(
-                    post: posts[index],
-                    postowner: false,
-                  ),
-                );
+                posts = tempList;
+                posts.shuffle();
+                filteredPosts = posts;
+                return _buildList();
               } else {
                 return Container(
                   child: Center(
@@ -96,6 +90,54 @@ class _HomeState extends State<Home> {
             }),
       ),
       drawer: MyAppDrawer(),
+    );
+  }
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = Icon(
+          Icons.close,
+          color: Colors.white,
+        );
+        this._appBarTitle = TextField(
+          controller: _filter,
+          textInputAction: TextInputAction.go,
+          decoration: InputDecoration(hintText: 'Search Posts'),
+          style: TextStyle(color: Colors.white, fontSize: 16.0),
+        );
+      } else {
+        this._searchIcon = Icon(
+          Icons.search,
+          color: Colors.white,
+        );
+        this._appBarTitle = Text('Home');
+        filteredPosts = posts;
+        _filter.clear();
+      }
+    });
+  }
+
+  Widget _buildList() {
+    if ((_searchText.isNotEmpty)) {
+      List<Post> tempList = new List();
+      for (int i = 0; i < filteredPosts.length; i++) {
+        if (filteredPosts[i]
+            .title
+            .toString()
+            .toLowerCase()
+            .contains(_searchText.toLowerCase())) {
+          tempList.add(filteredPosts[i]);
+        }
+      }
+      filteredPosts = tempList;
+    }
+    return ListView.builder(
+      itemCount: posts == null ? 0 : filteredPosts.length,
+      itemBuilder: (buildContext, index) => PostCard(
+        post: filteredPosts[index],
+        postowner: false,
+      ),
     );
   }
 }

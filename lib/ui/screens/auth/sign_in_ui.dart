@@ -46,7 +46,9 @@ class _SignInUIState extends State<SignInUI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    LogoGraphicHeader(),
+                    LogoGraphicHeader(
+                      tag: "sign_in",
+                    ),
                     SizedBox(height: 48.0),
                     FormInputFieldWithIcon(
                       controller: _email,

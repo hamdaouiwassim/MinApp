@@ -24,9 +24,10 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _description = new TextEditingController();
   String productType;
   String _title;
-  String description;
+  //String _description;
   File _image;
   bool updating = false;
   String _uploadedFileURL =
@@ -34,8 +35,13 @@ class _AddPostState extends State<AddPost> {
   bool isLoading = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _description.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,8 +51,8 @@ class _AddPostState extends State<AddPost> {
     if (widget.post != null) {
       updating = true;
       if (listofTitles.contains(widget.post.title)) _title = widget.post.title;
-      description = widget.post.description;
-      _uploadedFileURL = widget.post.photo;
+      _description.text = widget.post?.description;
+      _uploadedFileURL = widget.post?.photo;
     }
 
     Widget loadingIndicator = isLoading
@@ -97,16 +103,16 @@ class _AddPostState extends State<AddPost> {
                 isExpanded: true,
                 hint: Text('Sélectionnez un titre'),
                 value: _title,
-                onChanged: (String txt) {
-                  this.setState(() {
-                    _title = txt;
+                onChanged: (value) {
+                  setState(() {
+                    _title = value;
                   });
                 },
                 items:
                     listofTitles.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(
+                    child: new Text(
                       value,
                     ),
                   );
@@ -142,13 +148,10 @@ class _AddPostState extends State<AddPost> {
                 height: 16,
               ),
               TextFormField(
+                controller: _description,
                 maxLines: 3,
-                initialValue: description,
-                onChanged: (String newValue) {
-                  this.setState(() {
-                    description = newValue;
-                  });
-                },
+                onChanged: (value) => null,
+                onSaved: (value) => _description.text = value,
                 decoration: new InputDecoration(
                   labelText: " Description",
                 ),
@@ -169,7 +172,7 @@ class _AddPostState extends State<AddPost> {
                               title: _title.toLowerCase(),
                               photo: _uploadedFileURL,
                               date: formatDate.format(timeKey),
-                              description: description,
+                              description: _description.text,
                               status: "En cours");
 
                           updating
@@ -184,7 +187,7 @@ class _AddPostState extends State<AddPost> {
                           title: _title.toLowerCase(),
                           photo: _uploadedFileURL,
                           date: formatDate.format(timeKey),
-                          description: description,
+                          description: _description.text,
                         );
                         await postProvider.updatePost(post, widget.post.id);
                         Navigator.pop(context);

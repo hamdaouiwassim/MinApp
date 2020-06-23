@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:minicipalite_app/repositories/post_repository.dart';
 import 'package:minicipalite_app/ui/widgets/post_card.dart';
@@ -77,18 +78,25 @@ class _UpdateProfileUIState extends State<UpdateProfileUI> {
                   alignment: WrapAlignment.center,
                   crossAxisAlignment: WrapCrossAlignment.end,
                   children: <Widget>[
-                    LogoGraphicHeader(
-                      imageUrl: _uploadedFileURL,
-                      file: _image,
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.camera_alt,
-                        size: 30.0,
-                      ),
-                      onPressed: () {
-                        _showChoiceDialog(context);
-                      },
+                    Stack(
+                      alignment: AlignmentDirectional.bottomEnd,
+                      children: <Widget>[
+                        LogoGraphicHeader(
+                          tag: "profile",
+                          imageUrl: _uploadedFileURL,
+                          file: _image,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.camera_alt,
+                            size: 20.0,
+                            color: Colors.blue,
+                          ),
+                          onPressed: () {
+                            _showChoiceDialog(context);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
