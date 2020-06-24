@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,7 +50,11 @@ class _SignUpUIState extends State<SignUpUI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    LogoGraphicHeader(),
+                    LogoGraphicHeader(
+                      tag: "signup",
+                      imageUrl: "",
+                      file: File(""),
+                    ),
                     SizedBox(height: 48.0),
                     FormInputFieldWithIcon(
                       controller: _name,
@@ -87,12 +93,12 @@ class _SignUpUIState extends State<SignUpUI> {
                             SystemChannels.textInput.invokeMethod(
                                 'TextInput.hide'); //to hide the keyboard - if any
                             AuthService _auth = AuthService();
-                            bool _isRegisterSucccess =
-                                await _auth.registerWithEmailAndPassword(
-                                    _name.text,
-                                    _email.text,
-                                    _password.text,
-                                    "");
+                            bool _isRegisterSucccess = await _auth
+                                .registerWithEmailAndPassword(
+                                    _name.text, _email.text, _password.text, "")
+                                .whenComplete(() =>
+                                    ExtendedNavigator.of(context)
+                                        .pushNamed(Routes.wrapper));
 
                             if (_isRegisterSucccess == false) {
                               _scaffoldKey.currentState.showSnackBar(SnackBar(

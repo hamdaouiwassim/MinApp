@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,6 +50,8 @@ class _SignInUIState extends State<SignInUI> {
                   children: <Widget>[
                     LogoGraphicHeader(
                       tag: "sign_in",
+                      file: File(""),
+                      imageUrl: "",
                     ),
                     SizedBox(height: 48.0),
                     FormInputFieldWithIcon(

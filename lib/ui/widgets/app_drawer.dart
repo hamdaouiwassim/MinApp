@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minicipalite_app/routes/router.gr.dart';
+import 'package:minicipalite_app/services/drawer_state_info.dart';
+import 'package:provider/provider.dart';
 
 import 'widgets.dart';
 
@@ -11,12 +13,15 @@ class MyAppDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           MyDrawerHeader(),
-          DrawerItem(icon: Icons.home, text: 'Home', routeName: Routes.wrapper),
           DrawerItem(
+              id: 0, icon: Icons.home, text: 'Home', routeName: Routes.wrapper),
+          DrawerItem(
+              id: 1,
               icon: Icons.person_outline,
               text: 'Profile',
               routeName: Routes.updateProfileUI),
           DrawerItem(
+              id: 2,
               icon: Icons.border_color,
               text: 'My posts',
               routeName: Routes.myPosts),
@@ -24,9 +29,15 @@ class MyAppDrawer extends StatelessWidget {
             color: Colors.grey,
           ),
           DrawerItem(
-              icon: Icons.add, text: 'Submit ', routeName: Routes.addPost),
+              id: 3,
+              icon: Icons.add,
+              text: 'Submit ',
+              routeName: Routes.addPost),
           DrawerItem(
-              icon: Icons.power_settings_new, text: 'Log out', routeName: '')
+              id: 4,
+              icon: Icons.power_settings_new,
+              text: 'Log out',
+              routeName: '')
         ],
       ),
     );

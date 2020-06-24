@@ -1,5 +1,7 @@
 /* Not currently used alternative signin options, google, apple, anonymous, etc*/
 //import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 //import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:minicipalite_app/localizations.dart';
@@ -37,7 +39,11 @@ class SignInOptionsUIState extends State<SignInOptionsUI> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              LogoGraphicHeader(),
+              LogoGraphicHeader(
+                tag: "sign_in",
+                file: File(""),
+                imageUrl: "",
+              ),
               SizedBox(height: 48.0),
               FormVerticalSpace(),
               /*     GoogleSignInButton(

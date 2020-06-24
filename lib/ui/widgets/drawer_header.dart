@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:minicipalite_app/models/models.dart';
@@ -12,7 +14,7 @@ class MyDrawerHeader extends StatelessWidget {
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.blue,
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -22,6 +24,7 @@ class MyDrawerHeader extends StatelessWidget {
               children: <Widget>[
                 LogoGraphicHeader(
                   tag: "header",
+                  file: new File("path"),
                   imageUrl: user.photoUrl,
                 ),
                 Positioned(
@@ -29,7 +32,7 @@ class MyDrawerHeader extends StatelessWidget {
                     left: 16.0,
                     child: Text(user?.email,
                         style: TextStyle(
-                            color: Colors.lightBlueAccent,
+                            color: Colors.white,
                             fontSize: 16.0,
                             fontWeight: FontWeight.w500))),
               ]),

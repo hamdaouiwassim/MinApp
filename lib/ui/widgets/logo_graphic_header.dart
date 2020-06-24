@@ -7,7 +7,11 @@ class LogoGraphicHeader extends StatelessWidget {
   final File file;
   final String tag;
 
-  const LogoGraphicHeader({Key key, this.tag, this.imageUrl, this.file})
+  const LogoGraphicHeader(
+      {Key key,
+      @required this.tag,
+      @required this.imageUrl,
+      @required this.file})
       : super(key: key);
 
   @override
@@ -19,7 +23,7 @@ class LogoGraphicHeader extends StatelessWidget {
       child: CircleAvatar(
         radius: 50,
         child: ClipOval(
-          child: (imageUrl == null && file == null)
+          child: (imageUrl.isEmpty && (file == null || file.path.isEmpty))
               ? Image.asset(
                   _imageLogo,
                   fit: BoxFit.cover,

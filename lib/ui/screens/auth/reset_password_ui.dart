@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minicipalite_app/localizations.dart';
@@ -46,7 +48,11 @@ class _ResetPasswordUIState extends State<ResetPasswordUI> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    LogoGraphicHeader(),
+                    LogoGraphicHeader(
+                      tag: "reset",
+                      file:File(""),
+                      imageUrl: "",
+                    ),
                     SizedBox(height: 48.0),
                     FormInputFieldWithIcon(
                       controller: _email,

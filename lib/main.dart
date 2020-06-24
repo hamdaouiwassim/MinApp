@@ -6,6 +6,7 @@ import 'package:minicipalite_app/localizations.dart';
 import 'package:minicipalite_app/models/user.dart';
 import 'package:minicipalite_app/repositories/post_repository.dart';
 import 'package:minicipalite_app/services/auth_widget_builder.dart';
+import 'package:minicipalite_app/services/drawer_state_info.dart';
 import 'package:minicipalite_app/services/services.dart';
 import 'package:minicipalite_app/ui/screens/auth/auth.dart';
 import 'package:minicipalite_app/ui/screens/home/home.dart';
@@ -43,7 +44,9 @@ class MyApp extends StatelessWidget {
               StreamProvider<FirebaseUser>.value(
                   value: FirebaseAuth.instance.onAuthStateChanged),
               StreamProvider<User>.value(
-                  value: AuthService().streamFirestoreUser(user))
+                  value: AuthService().streamFirestoreUser(user)),
+              ChangeNotifierProvider<DrawerStateInfo>(
+                  create: (_) => DrawerStateInfo()),
             ],
             child: MaterialApp(
               locale: AppLocalizations.languages.keys.first,
